@@ -38,13 +38,19 @@ int main(void)
 	// Configure Output Device
 	snd_pcm_t *handle = Audio_openDevice();
 
+	char[] file1 = "German_Concert_D_021_083.wav";
+	char[] file2 = "German_Concert_D_025_083.wav";
+	
+	
 	// Load wave file we want to play:
 	wavedata_t sampleFile;
-	Audio_readWaveFileIntoMemory(SOURCE_FILE, &sampleFile);
+	Audio_readWaveFileIntoMemory(file1, &sampleFile);
 
 	// Play Audio
 	Audio_playFile(handle, &sampleFile);
-//	Audio_playFile(handle, &sampleFile);
+	
+	Audio_readWaveFileIntoMemory(file2, &sampleFile);
+	Audio_playFile(handle, &sampleFile);
 //	Audio_playFile(handle, &sampleFile);
 
 	// Cleanup, letting the music in buffer play out (drain), then close and free.
@@ -71,7 +77,8 @@ snd_pcm_t *Audio_openDevice()
 		printf("Play-back open error: %s\n", snd_strerror(err));
 		exit(EXIT_FAILURE);
 	}
-
+	
+	// 這邊要改
 	// Configure parameters of PCM output
 	err = snd_pcm_set_params(handle,
 			SND_PCM_FORMAT_S16_LE,
@@ -129,6 +136,27 @@ void Audio_readWaveFileIntoMemory(char *fileName, wavedata_t *pWaveStruct)
 
 	fclose(file);
 }
+
+// 一次播放好幾個音檔
+void Audio_playMultiFile(snd_pcm_t *handle, wavedata_t *pWaveData)
+{
+	// If anything is waiting to be written to screen, can be delayed unless flushed.
+	fflush(stdout);
+
+	// Write data and play sound (blocking)
+	snd_pcm_sframes_t frames = snd_pcm_writei(handle, pWaveData->pData, pWaveData->numSamples);
+
+	// Check for errors
+	if (frames < 0)
+		frames = snd_pcm_recover(handle, frames, 0);
+	if (frames < 0) {
+		fprintf(stderr, "ERROR: Failed writing audio with snd_pcm_writei(): %li\n", frames);
+		exit(EXIT_FAILURE);
+	}
+	if (frames > 0 && frames < pWaveData->numSamples)
+		printf("Short write (expected %d, wrote %li)\n", pWaveData->numSamples, frames);
+}
+
 
 // Play the audio file (blocking)
 void Audio_playFile(snd_pcm_t *handle, wavedata_t *pWaveData)
