@@ -38,8 +38,8 @@ int main(void)
 	// Configure Output Device
 	snd_pcm_t *handle = Audio_openDevice();
 
-	char[] file1 = "German_Concert_D_021_083.wav";
-	char[] file2 = "German_Concert_D_025_083.wav";
+	char file1[] = "German_Concert_D_021_083.wav";
+	char file2[] = "German_Concert_D_025_083.wav";
 	
 	
 	// Load wave file we want to play:
