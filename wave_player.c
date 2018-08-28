@@ -239,6 +239,7 @@ void Audio_playFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData)
 		
 		pthread_create(&(t[i]), NULL, Audio_playFile_Piece, &aPiece ); // 建立子執行緒
 		printf("%d", i);
+		break;
 		usleep(10000);
 	
 	}
