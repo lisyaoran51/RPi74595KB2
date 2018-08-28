@@ -41,8 +41,8 @@ int main(void)
 	printf("Beginning play-back of %s\n", SOURCE_FILE);
 	
 	
-	pthread_t t; // 宣告 pthread 變數
-	pthread_create(&t, NULL, child, "Child"); // 建立子執行緒
+	//pthread_t t; // 宣告 pthread 變數
+	//pthread_create(&t, NULL, child, "Child"); // 建立子執行緒
 	
 	
 	// Configure Output Device
