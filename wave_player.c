@@ -161,6 +161,7 @@ void Audio_readWaveFileIntoMemory(char *fileName, wavedata_t *pWaveStruct)
 		exit(EXIT_FAILURE);
 	}
 	
+	/***
 	unsigned char* stuff8;
 	for(int i = 0; i < pWaveStruct->numSamples; i++){
 		stuff8 = (unsigned char*)&(pWaveStruct->pData[i]);
@@ -168,6 +169,7 @@ void Audio_readWaveFileIntoMemory(char *fileName, wavedata_t *pWaveStruct)
 		if(i % 16 == 0)
 			printf("\n");
 	}
+	***/
 
 	fclose(file);
 }
