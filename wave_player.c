@@ -232,6 +232,21 @@ void Audio_playFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData)
 	
 	AudioPiece aPiece;
 	
+	pthread_t t1, t2;
+	
+	aPiece.handle = handle;
+	aPiece.pData = &(pWaveData->pData[0 * 32 * (SAMPLE_RATE / 100)]);
+	aPiece.bufNum = 32 * (SAMPLE_RATE / 100);
+	
+	pthread_create(&t1, NULL, Audio_playFile_Piece, &aPiece ); // 建立子執行緒
+	
+	usleep(100000);
+	
+	aPiece.pData = &(pWaveData->pData[1 * 32 * (SAMPLE_RATE / 100)]);
+	pthread_create(&t2, NULL, Audio_playFile_Piece, &aPiece ); // 建立子執行緒
+	
+	return;
+	
 	snd_pcm_sframes_t frames;
 	for(int i = 0; i < pWaveData->numSamples / 32 / (SAMPLE_RATE / 100); i++){
 		
