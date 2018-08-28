@@ -5,8 +5,9 @@
  */
 
 #include <alsa/asoundlib.h>
+#include <pthread.h>
 
-// g++ wave_player.c -fpermissive -lasound
+// g++ wave_player.c -fpermissive -lasound -lpthread
 
 
 // File used for play-back:
@@ -31,13 +32,19 @@ typedef struct {
 snd_pcm_t *Audio_openDevice();
 void Audio_readWaveFileIntoMemory(char *fileName, wavedata_t *pWaveStruct);
 void Audio_playFile(snd_pcm_t *handle, wavedata_t *pWaveData);
+void Audio_playFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData);
 void Audio_playMultiFile(snd_pcm_t *handle, wavedata_t *pWaveData1,  wavedata_t *pWaveData2);
 
 
 int main(void)
 {
 	printf("Beginning play-back of %s\n", SOURCE_FILE);
-
+	
+	
+	pthread_t t; // 宣告 pthread 變數
+	pthread_create(&t, NULL, child, "Child"); // 建立子執行緒
+	
+	
 	// Configure Output Device
 	snd_pcm_t *handle = Audio_openDevice();
 
@@ -56,9 +63,9 @@ int main(void)
 	wavedata_t sampleFile2;
 	
 	Audio_readWaveFileIntoMemory(file1, &sampleFile1);
-	Audio_readWaveFileIntoMemory(file2, &sampleFile2);
-	Audio_playMultiFile(handle, &sampleFile1, &sampleFile2);
-	
+	//Audio_readWaveFileIntoMemory(file2, &sampleFile2);
+	//Audio_playMultiFile(handle, &sampleFile1, &sampleFile2);
+	Audio_playFile_Cut(handle, &sampleFile1);
 	
 
 	// Cleanup, letting the music in buffer play out (drain), then close and free.
@@ -69,7 +76,7 @@ int main(void)
 	snd_pcm_close(handle);
 	printf("Close\n");
 	free(sampleFile1.pData);
-	free(sampleFile2.pData);
+	//free(sampleFile2.pData);
 
 	printf("Done!\n");
 	return 0;
@@ -145,6 +152,12 @@ void Audio_readWaveFileIntoMemory(char *fileName, wavedata_t *pWaveStruct)
 				pWaveStruct->numSamples, fileName, samplesRead);
 		exit(EXIT_FAILURE);
 	}
+	
+	for(int i = 0; i < pWaveStruct->numSamples; i++){
+		printf("%d ", pWaveStruct->pData[i]);
+		if(i % 16 == 0)
+			printf("\n");
+	}
 
 	fclose(file);
 }
@@ -192,4 +205,39 @@ void Audio_playFile(snd_pcm_t *handle, wavedata_t *pWaveData)
 	}
 	if (frames > 0 && frames < pWaveData->numSamples)
 		printf("Short write (expected %d, wrote %li)\n", pWaveData->numSamples, frames);
+}
+
+
+// Play the audio file (blocking)
+void Audio_playFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData)
+{
+	// If anything is waiting to be written to screen, can be delayed unless flushed.
+	fflush(stdout);
+	
+	snd_pcm_sframes_t frames;
+	for(int i = 0; i < pWaveData->numSamples / (SAMPLE_RATE / 100); i++){
+		
+		// Write data and play sound (blocking)
+		snd_pcm_sframes_t frames = snd_pcm_writei(handle, pWaveData->pData, pWaveData->numSamples);
+	
+	}
+	
+
+
+	// Check for errors
+	if (frames < 0)
+		frames = snd_pcm_recover(handle, frames, 0);
+	if (frames < 0) {
+		fprintf(stderr, "ERROR: Failed writing audio with snd_pcm_writei(): %li\n", frames);
+		exit(EXIT_FAILURE);
+	}
+	if (frames > 0 && frames < pWaveData->numSamples)
+		printf("Short write (expected %d, wrote %li)\n", pWaveData->numSamples, frames);
+}
+
+void Audio_playFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData, int bufNum){
+	
+	// Write data and play sound (blocking)
+	snd_pcm_sframes_t frames = snd_pcm_writei(handle, pWaveData->pData, pWaveData->numSamples);
+	
 }
