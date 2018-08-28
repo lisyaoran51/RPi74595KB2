@@ -68,7 +68,8 @@ int main(void)
 	printf("Free\n");
 	snd_pcm_close(handle);
 	printf("Close\n");
-	free(sampleFile.pData);
+	free(sampleFile1.pData);
+	free(sampleFile2.pData);
 
 	printf("Done!\n");
 	return 0;
