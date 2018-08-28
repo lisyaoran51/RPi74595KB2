@@ -226,7 +226,7 @@ void Audio_playFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData)
 	// If anything is waiting to be written to screen, can be delayed unless flushed.
 	fflush(stdout);
 	
-	pthread_t t; // 宣告 pthread 變數
+	pthread_t t[pWaveData->numSamples / (SAMPLE_RATE / 100)]; // 宣告 pthread 變數
 	
 	AudioPiece aPiece;
 	
@@ -237,7 +237,7 @@ void Audio_playFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData)
 		aPiece.pData = &(pWaveData->pData[i * (SAMPLE_RATE / 100)]);
 		aPiece.bufNum = (SAMPLE_RATE / 100);
 		
-		pthread_create(&t, NULL, Audio_playFile_Piece, &aPiece ); // 建立子執行緒
+		pthread_create(&(t[i]), NULL, Audio_playFile_Piece, &aPiece ); // 建立子執行緒
 		printf("%d", i);
 		usleep(10000);
 	
