@@ -6,6 +6,7 @@
 
 #include <alsa/asoundlib.h>
 #include <pthread.h>
+#include <unistd.h>
 
 // g++ wave_player.c -fpermissive -lasound -lpthread
 
@@ -171,7 +172,7 @@ void Audio_playMultiFile(snd_pcm_t *handle, wavedata_t *pWaveData1,  wavedata_t 
 	fflush(stdout);
 	
 	snd_pcm_sframes_t frames;
-
+	
 	// Write data and play sound (blocking)
 	frames = snd_pcm_writei(handle, pWaveData1->pData, pWaveData1->numSamples);
 	frames = snd_pcm_writei(handle, pWaveData2->pData, pWaveData2->numSamples);
@@ -216,11 +217,13 @@ void Audio_playFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData)
 	// If anything is waiting to be written to screen, can be delayed unless flushed.
 	fflush(stdout);
 	
+	pthread_t t; // 宣告 pthread 變數
+	
 	snd_pcm_sframes_t frames;
 	for(int i = 0; i < pWaveData->numSamples / (SAMPLE_RATE / 100); i++){
 		
-		// Write data and play sound (blocking)
-		snd_pcm_sframes_t frames = snd_pcm_writei(handle, pWaveData->pData, pWaveData->numSamples);
+		pthread_create(&t, NULL, Audio_playFile_Piece, handle, &(pWaveData->pData[i * (SAMPLE_RATE / 100)]), (SAMPLE_RATE / 100) ); // 建立子執行緒
+		usleep(10000);
 	
 	}
 	
@@ -237,9 +240,9 @@ void Audio_playFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData)
 		printf("Short write (expected %d, wrote %li)\n", pWaveData->numSamples, frames);
 }
 
-void Audio_playFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData, int bufNum){
+void Audio_playFile_Piece(snd_pcm_t *handle, short *buf, int bufNum){
 	
 	// Write data and play sound (blocking)
-	snd_pcm_sframes_t frames = snd_pcm_writei(handle, pWaveData->pData, pWaveData->numSamples);
+	snd_pcm_sframes_t frames = snd_pcm_writei(handle, buf, bufNum);
 	
 }
