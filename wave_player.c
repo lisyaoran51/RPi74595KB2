@@ -232,7 +232,7 @@ void Audio_playFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData)
 	for(int i = 0; i < pWaveData->numSamples / (SAMPLE_RATE / 100); i++){
 		
 		aPiece.handle = handle;
-		aPiece.buf = &(pWaveData->pData[i * (SAMPLE_RATE / 100)]);
+		aPiece.pData = &(pWaveData->pData[i * (SAMPLE_RATE / 100)]);
 		aPiece.bufNum = (SAMPLE_RATE / 100);
 		
 		pthread_create(&t, NULL, Audio_playFile_Piece, &aPiece ); // 建立子執行緒
@@ -259,6 +259,6 @@ void Audio_playFile_Piece(AudioPiece* aPiece){
 	// snd_pcm_t *handle, short *buf, int bufNum
 	
 	// Write data and play sound (blocking)
-	snd_pcm_sframes_t frames = snd_pcm_writei(aPiece->handle, aPiece->buf, aPiece->bufNum);
+	snd_pcm_sframes_t frames = snd_pcm_writei(aPiece->handle, aPiece->pData, aPiece->bufNum);
 	
 }
