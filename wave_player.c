@@ -34,6 +34,7 @@ snd_pcm_t *Audio_openDevice();
 void Audio_readWaveFileIntoMemory(char *fileName, wavedata_t *pWaveStruct);
 void Audio_playFile(snd_pcm_t *handle, wavedata_t *pWaveData);
 void Audio_playFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData);
+void Audio_playFile_Piece(snd_pcm_t *handle, short *buf, int bufNum);
 void Audio_playMultiFile(snd_pcm_t *handle, wavedata_t *pWaveData1,  wavedata_t *pWaveData2);
 
 
