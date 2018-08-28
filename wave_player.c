@@ -153,10 +153,12 @@ void Audio_playMultiFile(snd_pcm_t *handle, wavedata_t *pWaveData1,  wavedata_t 
 {
 	// If anything is waiting to be written to screen, can be delayed unless flushed.
 	fflush(stdout);
+	
+	snd_pcm_sframes_t frames;
 
 	// Write data and play sound (blocking)
-	snd_pcm_sframes_t frames = snd_pcm_writei(handle, pWaveData1->pData, pWaveData1->numSamples);
-	snd_pcm_sframes_t frames = snd_pcm_writei(handle, pWaveData2->pData, pWaveData2->numSamples);
+	frames = snd_pcm_writei(handle, pWaveData1->pData, pWaveData1->numSamples);
+	frames = snd_pcm_writei(handle, pWaveData2->pData, pWaveData2->numSamples);
 	
 
 	// Check for errors
