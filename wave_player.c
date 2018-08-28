@@ -71,9 +71,10 @@ int main(void)
 	wavedata_t sampleFile2;
 	
 	Audio_readWaveFileIntoMemory(file1, &sampleFile1);
-	//Audio_readWaveFileIntoMemory(file2, &sampleFile2);
-	//Audio_playMultiFile(handle, &sampleFile1, &sampleFile2);
+	Audio_readWaveFileIntoMemory(file2, &sampleFile2);
 	Audio_playFile_Cut(handle, &sampleFile1);
+	//Audio_playMultiFile(handle, &sampleFile1, &sampleFile2);
+	//Audio_playMultiFile_Cut(handle, &sampleFile1, &sampleFile2);
 	
 
 	// Cleanup, letting the music in buffer play out (drain), then close and free.
@@ -237,7 +238,44 @@ void Audio_playFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData)
 		aPiece.pData = &(pWaveData->pData[i * 32 * (SAMPLE_RATE / 100)]);
 		aPiece.bufNum = 32 * (SAMPLE_RATE / 100);
 		
-		frames = snd_pcm_writei(aPiece.handle, aPiece.pData, aPiece.bufNum);
+		//frames = snd_pcm_writei(aPiece.handle, aPiece.pData, aPiece.bufNum);
+		pthread_create(&(t[i]), NULL, Audio_playFile_Piece, &aPiece ); // 建立子執行緒
+		printf("%d", i);
+		//break;
+		usleep(100000);
+	
+	}
+	
+
+
+	// Check for errors
+	if (frames < 0)
+		frames = snd_pcm_recover(handle, frames, 0);
+	if (frames < 0) {
+		fprintf(stderr, "ERROR: Failed writing audio with snd_pcm_writei(): %li\n", frames);
+		exit(EXIT_FAILURE);
+	}
+	if (frames > 0 && frames < pWaveData->numSamples)
+		printf("Short write (expected %d, wrote %li)\n", pWaveData->numSamples, frames);
+}
+
+// Play the audio file (blocking)
+void Audio_playFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData)
+{
+	// If anything is waiting to be written to screen, can be delayed unless flushed.
+	fflush(stdout);
+	
+	pthread_t t[pWaveData->numSamples / 32 / (SAMPLE_RATE / 100)]; // 宣告 pthread 變數
+	
+	AudioPiece aPiece;
+	
+	snd_pcm_sframes_t frames;
+	for(int i = 0; i < pWaveData->numSamples / 32 / (SAMPLE_RATE / 100); i++){
+		
+		aPiece.handle = handle;
+		aPiece.pData = &(pWaveData->pData[i * 32 * (SAMPLE_RATE / 100)]);
+		aPiece.bufNum = 32 * (SAMPLE_RATE / 100);
+		
 		frames = snd_pcm_writei(aPiece.handle, aPiece.pData, aPiece.bufNum);
 		//pthread_create(&(t[i]), NULL, Audio_playFile_Piece, &aPiece ); // 建立子執行緒
 		//printf("%d", i);
