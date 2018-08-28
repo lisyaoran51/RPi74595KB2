@@ -6,6 +6,9 @@
 
 #include <alsa/asoundlib.h>
 
+// g++ wave_player.c -fpermissive -lasound
+
+
 // File used for play-back:
 // If cross-compiling, must have this file available, via this relative path,
 // on the target when the application is run. This example's Makefile copies the wave-files/
@@ -38,8 +41,12 @@ int main(void)
 	// Configure Output Device
 	snd_pcm_t *handle = Audio_openDevice();
 
-	char file1[] = "German_Concert_D_021_083.wav";
-	char file2[] = "German_Concert_D_025_083.wav";
+	char file1[] = "Audio/German_Concert_D_021_083.wav";
+	char file2[] = "Audio/German_Concert_D_025_083.wav";
+	char file3[] = "Audio/German_Concert_D_033_083.wav";
+	char file4[] = "Audio/German_Concert_D_048_083.wav";
+	char file5[] = "Audio/German_Concert_D_071_083.wav";
+	char file6[] = "Audio/German_Concert_D_078_083.wav";
 	
 	
 	// Load wave file we want to play:
