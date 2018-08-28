@@ -238,7 +238,7 @@ void Audio_playFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData)
 		aPiece.bufNum = (SAMPLE_RATE / 100);
 		
 		pthread_create(&t, NULL, Audio_playFile_Piece, &aPiece ); // 建立子執行緒
-		
+		printf("%d", i);
 		usleep(10000);
 	
 	}
