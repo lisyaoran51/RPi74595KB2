@@ -31,7 +31,7 @@ typedef struct {
 snd_pcm_t *Audio_openDevice();
 void Audio_readWaveFileIntoMemory(char *fileName, wavedata_t *pWaveStruct);
 void Audio_playFile(snd_pcm_t *handle, wavedata_t *pWaveData);
-
+void Audio_playMultiFile(snd_pcm_t *handle, wavedata_t *pWaveData1,  wavedata_t *pWaveData2);
 
 
 int main(void)
@@ -52,25 +52,13 @@ int main(void)
 	
 	
 	// Load wave file we want to play:
-	wavedata_t sampleFile;
+	wavedata_t sampleFile1;
+	wavedata_t sampleFile2;
 	
-	Audio_readWaveFileIntoMemory(file1, &sampleFile);
-	Audio_playFile(handle, &sampleFile);
+	Audio_readWaveFileIntoMemory(file1, &sampleFile1);
+	Audio_readWaveFileIntoMemory(file2, &sampleFile2);
+	Audio_playMultiFile(handle, &sampleFile1, &sampleFile2);
 	
-	Audio_readWaveFileIntoMemory(file2, &sampleFile);
-	Audio_playFile(handle, &sampleFile);
-	
-	Audio_readWaveFileIntoMemory(file3, &sampleFile);
-	Audio_playFile(handle, &sampleFile);
-	
-	Audio_readWaveFileIntoMemory(file4, &sampleFile);
-	Audio_playFile(handle, &sampleFile);
-	
-	Audio_readWaveFileIntoMemory(file5, &sampleFile);
-	Audio_playFile(handle, &sampleFile);
-	
-	Audio_readWaveFileIntoMemory(file6, &sampleFile);
-	Audio_playFile(handle, &sampleFile);
 	
 
 	// Cleanup, letting the music in buffer play out (drain), then close and free.
@@ -161,13 +149,15 @@ void Audio_readWaveFileIntoMemory(char *fileName, wavedata_t *pWaveStruct)
 }
 
 // 一次播放好幾個音檔
-void Audio_playMultiFile(snd_pcm_t *handle, wavedata_t *pWaveData)
+void Audio_playMultiFile(snd_pcm_t *handle, wavedata_t *pWaveData1,  wavedata_t *pWaveData2)
 {
 	// If anything is waiting to be written to screen, can be delayed unless flushed.
 	fflush(stdout);
 
 	// Write data and play sound (blocking)
-	snd_pcm_sframes_t frames = snd_pcm_writei(handle, pWaveData->pData, pWaveData->numSamples);
+	snd_pcm_sframes_t frames = snd_pcm_writei(handle, pWaveData1->pData, pWaveData1->numSamples);
+	snd_pcm_sframes_t frames = snd_pcm_writei(handle, pWaveData2->pData, pWaveData2->numSamples);
+	
 
 	// Check for errors
 	if (frames < 0)
@@ -176,8 +166,8 @@ void Audio_playMultiFile(snd_pcm_t *handle, wavedata_t *pWaveData)
 		fprintf(stderr, "ERROR: Failed writing audio with snd_pcm_writei(): %li\n", frames);
 		exit(EXIT_FAILURE);
 	}
-	if (frames > 0 && frames < pWaveData->numSamples)
-		printf("Short write (expected %d, wrote %li)\n", pWaveData->numSamples, frames);
+	if (frames > 0 && frames < pWaveData1->numSamples)
+		printf("Short write (expected %d, wrote %li)\n", pWaveData1->numSamples, frames);
 }
 
 
