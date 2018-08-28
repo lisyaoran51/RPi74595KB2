@@ -47,6 +47,8 @@ int main(void)
 	char file4[] = "Audio/German_Concert_D_048_083.wav";
 	char file5[] = "Audio/German_Concert_D_071_083.wav";
 	char file6[] = "Audio/German_Concert_D_078_083.wav";
+	char file7[] = "Audio/German_Concert_D_085_083.wav";
+	char file8[] = "Audio/German_Concert_D_100_083.wav";
 	
 	
 	// Load wave file we want to play:
@@ -62,8 +64,11 @@ int main(void)
 
 	// Cleanup, letting the music in buffer play out (drain), then close and free.
 	snd_pcm_drain(handle);
+	printf("Drained\n");
 	snd_pcm_hw_free(handle);
+	printf("Free\n");
 	snd_pcm_close(handle);
+	printf("Close\n");
 	free(sampleFile.pData);
 
 	printf("Done!\n");
