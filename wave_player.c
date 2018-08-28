@@ -29,6 +29,12 @@ typedef struct {
 	short *pData;
 } wavedata_t;
 
+typedef struct {
+	snd_pcm_t *handle;
+	short *pData;
+	int bufNum;
+} AudioPiece;
+
 // Prototypes:
 snd_pcm_t *Audio_openDevice();
 void Audio_readWaveFileIntoMemory(char *fileName, wavedata_t *pWaveStruct);
@@ -220,10 +226,17 @@ void Audio_playFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData)
 	
 	pthread_t t; // 宣告 pthread 變數
 	
+	AudioPiece aPiece;
+	
 	snd_pcm_sframes_t frames;
 	for(int i = 0; i < pWaveData->numSamples / (SAMPLE_RATE / 100); i++){
 		
-		pthread_create(&t, NULL, Audio_playFile_Piece, handle, &(pWaveData->pData[i * (SAMPLE_RATE / 100)]), (SAMPLE_RATE / 100) ); // 建立子執行緒
+		aPiece.handle = handle;
+		aPiece.buf = &(pWaveData->pData[i * (SAMPLE_RATE / 100)]);
+		aPiece.bufNum = (SAMPLE_RATE / 100);
+		
+		pthread_create(&t, NULL, Audio_playFile_Piece, &aPiece ); // 建立子執行緒
+		
 		usleep(10000);
 	
 	}
@@ -241,9 +254,11 @@ void Audio_playFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData)
 		printf("Short write (expected %d, wrote %li)\n", pWaveData->numSamples, frames);
 }
 
-void Audio_playFile_Piece(snd_pcm_t *handle, short *buf, int bufNum){
+void Audio_playFile_Piece(AudioPiece* aPiece){
+	
+	// snd_pcm_t *handle, short *buf, int bufNum
 	
 	// Write data and play sound (blocking)
-	snd_pcm_sframes_t frames = snd_pcm_writei(handle, buf, bufNum);
+	snd_pcm_sframes_t frames = snd_pcm_writei(aPiece->handle, aPiece->buf, aPiece->bufNum);
 	
 }
