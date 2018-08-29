@@ -73,8 +73,29 @@ int main(void)
 	
 	Audio_readWaveFileIntoMemory(file1, &sampleFile1);
 	Audio_readWaveFileIntoMemory(file2, &sampleFile2);
-	//Audio_playFile(handle, &sampleFile1);
-	Audio_playFile_Cut(handle, &sampleFile1);
+	
+	wavedata_t sampleFile3;
+	sampleFile3.numSamples = sampleFile1.numSamples < sampleFile2.numSamples ? sampleFile1.numSamples : sampleFile2.numSamples;
+	sampleFile3.pData = malloc(sampleFile3.numSamples * SAMPLE_SIZE);
+	
+	for(int i = 0; i < sampleFile3.numSamples; i++){
+		
+		if( *(sampleFile1.pData+i) + *(sampleFile2.pData+i) < -32768 ){
+			*(sampleFile3.pData+i) = -32768;
+		}
+		else if( *(sampleFile1.pData+i) + *(sampleFile2.pData+i) > 32767 ){
+			*(sampleFile3.pData+i) = 32767;
+		}
+		else{
+			*(sampleFile3.pData+i) = *(sampleFile1.pData+i) + *(sampleFile2.pData+i);
+		}
+		
+	}
+	
+	
+	
+	Audio_playFile(handle, &sampleFile3);
+	//Audio_playFile_Cut(handle, &sampleFile1);
 	//Audio_playMultiFile(handle, &sampleFile1, &sampleFile2);
 	//Audio_playMultiFile_Cut(handle, &sampleFile1, &sampleFile2);
 	
