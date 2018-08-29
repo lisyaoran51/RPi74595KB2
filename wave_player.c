@@ -334,7 +334,7 @@ void Audio_playMultiFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData1, wavedata
 		aPiece.pData = &(sampleFile3.pData[i * NUM_CHANNELS * (SAMPLE_RATE / RESAMPLE_RATE)]);
 		aPiece.bufNum = NUM_CHANNELS * (SAMPLE_RATE / RESAMPLE_RATE);
 		
-		printf("count done!!\n");
+		//printf("count done!!\n");
 		
 		//Audio_playFile_Piece(&aPiece);
 		
