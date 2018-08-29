@@ -75,7 +75,7 @@ int main(void)
 	Audio_readWaveFileIntoMemory(file1, &sampleFile1);
 	Audio_readWaveFileIntoMemory(file2, &sampleFile2);
 	
-	/***
+	///***
 	wavedata_t sampleFile3;
 	sampleFile3.numSamples = sampleFile1.numSamples < sampleFile2.numSamples ? sampleFile1.numSamples : sampleFile2.numSamples;
 	sampleFile3.pData = malloc(sampleFile3.numSamples * SAMPLE_SIZE);
@@ -94,17 +94,17 @@ int main(void)
 		
 	}
 	printf("Added\n");
-	***/
+	//***/
 	
 	//printf("Play1\n");
 	//Audio_playFile(handle, &sampleFile1);
 	//printf("Play2\n");
 	//Audio_playFile(handle, &sampleFile2);
 	//printf("Play3\n");
-	//Audio_playFile(handle, &sampleFile3);
+	Audio_playFile(handle, &sampleFile3);
 	//Audio_playFile_Cut(handle, &sampleFile1);
 	//Audio_playMultiFile(handle, &sampleFile1, &sampleFile2);
-	Audio_playMultiFile_Cut(handle, &sampleFile1, &sampleFile2);
+	//Audio_playMultiFile_Cut(handle, &sampleFile1, &sampleFile2);
 	
 
 	// Cleanup, letting the music in buffer play out (drain), then close and free.
