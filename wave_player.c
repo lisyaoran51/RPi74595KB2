@@ -92,8 +92,11 @@ int main(void)
 		
 	}
 	printf("Added\n");
-	
-	
+	printf("Play1\n");
+	Audio_playFile(handle, &sampleFile1);
+	printf("Play2\n");
+	Audio_playFile(handle, &sampleFile2);
+	printf("Play3\n");
 	Audio_playFile(handle, &sampleFile3);
 	//Audio_playFile_Cut(handle, &sampleFile1);
 	//Audio_playMultiFile(handle, &sampleFile1, &sampleFile2);
