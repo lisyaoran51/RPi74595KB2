@@ -112,7 +112,7 @@ snd_pcm_t *Audio_openDevice()
 	// 這邊要改
 	// Configure parameters of PCM output
 	err = snd_pcm_set_params(handle,
-			SND_PCM_FORMAT_U16_LE,
+			SND_PCM_FORMAT_S16_LE,
 			SND_PCM_ACCESS_RW_INTERLEAVED,
 			NUM_CHANNELS,
 			SAMPLE_RATE,
