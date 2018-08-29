@@ -113,10 +113,10 @@ snd_pcm_t *Audio_openDevice()
 	// Configure parameters of PCM output
 	err = snd_pcm_set_params(handle,
 			SND_PCM_FORMAT_S16_LE,
-			SND_PCM_ACCESS_RW_INTERLEAVED,
+			SND_PCM_ACCESS_RW_NONINTERLEAVED ,
 			NUM_CHANNELS,
 			SAMPLE_RATE,
-			0,			// Allow software resampling
+			1,			// Allow software resampling
 			50000);		// 0.05 seconds per buffer
 	if (err < 0) {
 		printf("Play-back configuration error: %s\n", snd_strerror(err));
