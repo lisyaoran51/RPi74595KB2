@@ -231,7 +231,7 @@ void Audio_playFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData)
 	
 	pthread_t t[pWaveData->numSamples / 32 / (SAMPLE_RATE / 100)]; // 宣告 pthread 變數
 	
-	AudioPiece aPiece;
+	AudioPiece aPiece[2];
 	
 	pthread_t t1, t2;
 	
@@ -253,12 +253,12 @@ void Audio_playFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData)
 	snd_pcm_sframes_t frames;
 	for(int i = 0; i < pWaveData->numSamples / 32 / (SAMPLE_RATE / 100); i++){
 		
-		aPiece.handle = handle;
-		aPiece.pData = pWaveData->pData + i * 32 * (SAMPLE_RATE / 100);
-		aPiece.bufNum = 32 * (SAMPLE_RATE / 100);
+		aPiece[i%2].handle = handle;
+		aPiece[i%2].pData = pWaveData->pData + i * 32 * (SAMPLE_RATE / 100);
+		aPiece[i%2].bufNum = 32 * (SAMPLE_RATE / 100);
 		
 		//frames = snd_pcm_writei(aPiece.handle, aPiece.pData, aPiece.bufNum);
-		pthread_create(t + i, NULL, Audio_playFile_Piece, &aPiece ); // 建立子執行緒
+		pthread_create(t + i, NULL, Audio_playFile_Piece, &(aPiece[i%2]) ); // 建立子執行緒
 		//printf("%d", i);
 		//break;
 		usleep(100000);
