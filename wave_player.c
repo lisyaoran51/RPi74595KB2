@@ -247,6 +247,8 @@ void Audio_playFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData)
 	
 	//return;
 	
+	printf("start!!\n");
+	
 	snd_pcm_sframes_t frames;
 	for(int i = 0; i < pWaveData->numSamples / 32 / (SAMPLE_RATE / 100); i++){
 		
