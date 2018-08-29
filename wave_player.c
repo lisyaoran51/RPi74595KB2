@@ -91,7 +91,7 @@ int main(void)
 		}
 		
 	}
-	
+	printf("Added\n");
 	
 	
 	Audio_playFile(handle, &sampleFile3);
