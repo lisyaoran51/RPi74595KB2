@@ -21,7 +21,7 @@
 #define SAMPLE_RATE   44100
 #define NUM_CHANNELS  2
 #define SAMPLE_SIZE   (sizeof(short)) 	// bytes per sample
-#define RESAMPLE_RATE 100
+#define RESAMPLE_RATE 10
 
 // Store data of a single wave file read into memory.
 // Space is dynamically allocated; must be freed correctly!
