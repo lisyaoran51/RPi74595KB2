@@ -363,5 +363,5 @@ void Audio_playFile_Piece(AudioPiece* aPiece){
 	// Write data and play sound (blocking)
 	snd_pcm_sframes_t frames = snd_pcm_writei(aPiece->handle, aPiece->pData, aPiece->bufNum);
 	
-	printf("write done!!\n");
+	//printf("write done!!\n");
 }
