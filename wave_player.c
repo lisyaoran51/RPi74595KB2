@@ -294,7 +294,7 @@ void Audio_playMultiFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData)
 void Audio_playFile_Piece(AudioPiece* aPiece){
 	
 	// snd_pcm_t *handle, short *buf, int bufNum
-	
+	printf("piece\n");
 	// Write data and play sound (blocking)
 	//snd_pcm_sframes_t frames = snd_pcm_writei(aPiece->handle, aPiece->pData, aPiece->bufNum);
 	
