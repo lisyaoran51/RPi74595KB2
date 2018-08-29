@@ -21,6 +21,7 @@
 #define SAMPLE_RATE   44100
 #define NUM_CHANNELS  2
 #define SAMPLE_SIZE   (sizeof(short)) 	// bytes per sample
+#define RESAMPLE_RATE 100
 
 // Store data of a single wave file read into memory.
 // Space is dynamically allocated; must be freed correctly!
@@ -74,6 +75,7 @@ int main(void)
 	Audio_readWaveFileIntoMemory(file1, &sampleFile1);
 	Audio_readWaveFileIntoMemory(file2, &sampleFile2);
 	
+	/***
 	wavedata_t sampleFile3;
 	sampleFile3.numSamples = sampleFile1.numSamples < sampleFile2.numSamples ? sampleFile1.numSamples : sampleFile2.numSamples;
 	sampleFile3.pData = malloc(sampleFile3.numSamples * SAMPLE_SIZE);
@@ -92,15 +94,17 @@ int main(void)
 		
 	}
 	printf("Added\n");
-	printf("Play1\n");
-	Audio_playFile(handle, &sampleFile1);
-	printf("Play2\n");
-	Audio_playFile(handle, &sampleFile2);
-	printf("Play3\n");
-	Audio_playFile(handle, &sampleFile3);
+	***/
+	
+	//printf("Play1\n");
+	//Audio_playFile(handle, &sampleFile1);
+	//printf("Play2\n");
+	//Audio_playFile(handle, &sampleFile2);
+	//printf("Play3\n");
+	//Audio_playFile(handle, &sampleFile3);
 	//Audio_playFile_Cut(handle, &sampleFile1);
 	//Audio_playMultiFile(handle, &sampleFile1, &sampleFile2);
-	//Audio_playMultiFile_Cut(handle, &sampleFile1, &sampleFile2);
+	Audio_playMultiFile_Cut(handle, &sampleFile1, &sampleFile2);
 	
 
 	// Cleanup, letting the music in buffer play out (drain), then close and free.
@@ -292,23 +296,64 @@ void Audio_playFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData)
 }
 
 // Play the audio file (blocking)
-void Audio_playMultiFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData)
+void Audio_playMultiFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData1, wavedata_t *pWaveData2)
 {
 	// If anything is waiting to be written to screen, can be delayed unless flushed.
 	fflush(stdout);
 	
-	pthread_t t[pWaveData->numSamples / 32 / (SAMPLE_RATE / 100)]; // 宣告 pthread 變數
+	//pthread_t t[pWaveData->numSamples / 32 / (SAMPLE_RATE / 100)]; // 宣告 pthread 變數
+	pthread_t t;
 	
 	AudioPiece aPiece;
 	
+	wavedata_t sampleFile3;
+	sampleFile3.numSamples = pWaveData1->numSamples < pWaveData2->numSamples ? pWaveData1->numSamples : pWaveData2->numSamples;
+	sampleFile3.pData = malloc(sampleFile3.numSamples * SAMPLE_SIZE);
+	
+	for(int i = 0; i < sampleFile3.numSamples; i++){
+		
+		if( *(sampleFile1.pData+i) + *(sampleFile2.pData+i) < -32768 ){
+			*(sampleFile3.pData+i) = -32768;
+		}
+		else if( *(sampleFile1.pData+i) + *(sampleFile2.pData+i) > 32767 ){
+			*(sampleFile3.pData+i) = 32767;
+		}
+		else{
+			*(sampleFile3.pData+i) = *(sampleFile1.pData+i) + *(sampleFile2.pData+i);
+		}
+		
+	}
+	
+	bool thread_alive = false;
 	snd_pcm_sframes_t frames;
-	for(int i = 0; i < pWaveData->numSamples / 32 / (SAMPLE_RATE / 100); i++){
+	for(int i = 0; i < sampleFile3.numSamples / NUM_CHANNELS / (SAMPLE_RATE / RESAMPLE_RATE); i++){
+		
+		for(int j = 0; j < NUM_CHANNELS * (SAMPLE_RATE / RESAMPLE_RATE); j++){
+			
+			int k = i * NUM_CHANNELS * (SAMPLE_RATE / RESAMPLE_RATE) + j;
+			
+			if( *(sampleFile1.pData+k) + *(sampleFile2.pData+k) < -32768 ){
+				*(sampleFile3.pData+k) = -32768;
+			}
+			else if( *(sampleFile1.pData+k) + *(sampleFile2.pData+k) > 32767 ){
+				*(sampleFile3.pData+k) = 32767;
+			}
+			else{
+				*(sampleFile3.pData+k) = *(sampleFile1.pData+k) + *(sampleFile2.pData+k);
+			}
+			
+		}
 		
 		aPiece.handle = handle;
-		aPiece.pData = &(pWaveData->pData[i * 32 * (SAMPLE_RATE / 100)]);
-		aPiece.bufNum = 32 * (SAMPLE_RATE / 100);
+		aPiece.pData = &(sampleFile3.pData[i * NUM_CHANNELS * (SAMPLE_RATE / RESAMPLE_RATE)]);
+		aPiece.bufNum = NUM_CHANNELS * (SAMPLE_RATE / RESAMPLE_RATE);
 		
-		frames = snd_pcm_writei(aPiece.handle, aPiece.pData, aPiece.bufNum);
+		if(thread_alive)
+			pthread_join(t, NULL);
+		
+		pthread_create(&t, NULL, Audio_playFile_Piece, &aPiece );
+		
+		//frames = snd_pcm_writei(aPiece.handle, aPiece.pData, aPiece.bufNum);
 		//pthread_create(&(t[i]), NULL, Audio_playFile_Piece, &aPiece ); // 建立子執行緒
 		//printf("%d", i);
 		////break;
