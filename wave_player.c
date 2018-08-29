@@ -344,7 +344,8 @@ void Audio_playMultiFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData1, wavedata
 		//if(thread_alive)
 		//	pthread_join(t, NULL);
 		
-		pthread_create( &(t[i]), NULL, Audio_playFile_Piece, &aPiece );
+		if(pthread_create( &(t[i]), NULL, Audio_playFile_Piece, &aPiece ) < 0)
+			printf("fail!!\n");
 		thread_alive = true;
 		usleep(100000);
 		//***/
