@@ -41,7 +41,7 @@ snd_pcm_t *Audio_openDevice();
 void Audio_readWaveFileIntoMemory(char *fileName, wavedata_t *pWaveStruct);
 void Audio_playFile(snd_pcm_t *handle, wavedata_t *pWaveData);
 void Audio_playFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData);
-void Audio_playMultiFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData);
+void Audio_playMultiFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData1, wavedata_t *pWaveData2);
 void Audio_playFile_Piece(AudioPiece* aPiece);
 void Audio_playMultiFile(snd_pcm_t *handle, wavedata_t *pWaveData1,  wavedata_t *pWaveData2);
 
@@ -310,20 +310,6 @@ void Audio_playMultiFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData1, wavedata
 	sampleFile3.numSamples = pWaveData1->numSamples < pWaveData2->numSamples ? pWaveData1->numSamples : pWaveData2->numSamples;
 	sampleFile3.pData = malloc(sampleFile3.numSamples * SAMPLE_SIZE);
 	
-	for(int i = 0; i < sampleFile3.numSamples; i++){
-		
-		if( *(sampleFile1.pData+i) + *(sampleFile2.pData+i) < -32768 ){
-			*(sampleFile3.pData+i) = -32768;
-		}
-		else if( *(sampleFile1.pData+i) + *(sampleFile2.pData+i) > 32767 ){
-			*(sampleFile3.pData+i) = 32767;
-		}
-		else{
-			*(sampleFile3.pData+i) = *(sampleFile1.pData+i) + *(sampleFile2.pData+i);
-		}
-		
-	}
-	
 	bool thread_alive = false;
 	snd_pcm_sframes_t frames;
 	for(int i = 0; i < sampleFile3.numSamples / NUM_CHANNELS / (SAMPLE_RATE / RESAMPLE_RATE); i++){
@@ -332,14 +318,14 @@ void Audio_playMultiFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData1, wavedata
 			
 			int k = i * NUM_CHANNELS * (SAMPLE_RATE / RESAMPLE_RATE) + j;
 			
-			if( *(sampleFile1.pData+k) + *(sampleFile2.pData+k) < -32768 ){
+			if( *(pWaveData1->pData+k) + *(pWaveData2->pData+k) < -32768 ){
 				*(sampleFile3.pData+k) = -32768;
 			}
-			else if( *(sampleFile1.pData+k) + *(sampleFile2.pData+k) > 32767 ){
+			else if( *(pWaveData1->pData+k) + *(pWaveData2->pData+k) > 32767 ){
 				*(sampleFile3.pData+k) = 32767;
 			}
 			else{
-				*(sampleFile3.pData+k) = *(sampleFile1.pData+k) + *(sampleFile2.pData+k);
+				*(sampleFile3.pData+k) = *(pWaveData1->pData+k) + *(pWaveData2->pData+k);
 			}
 			
 		}
