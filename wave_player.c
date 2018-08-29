@@ -19,7 +19,7 @@
 //#define SOURCE_FILE "wave-files/100053__menegass__gui-drum-cc.wav"
 
 #define SAMPLE_RATE   44100
-#define NUM_CHANNELS  1
+#define NUM_CHANNELS  2
 #define SAMPLE_SIZE   (sizeof(short)) 	// bytes per sample
 
 // Store data of a single wave file read into memory.
@@ -113,7 +113,7 @@ snd_pcm_t *Audio_openDevice()
 	// Configure parameters of PCM output
 	err = snd_pcm_set_params(handle,
 			SND_PCM_FORMAT_S16_LE,
-			SND_PCM_ACCESS_RW_NONINTERLEAVED ,
+			SND_PCM_ACCESS_RW_INTERLEAVED,
 			NUM_CHANNELS,
 			SAMPLE_RATE,
 			1,			// Allow software resampling
