@@ -301,14 +301,16 @@ void Audio_playMultiFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData1, wavedata
 	// If anything is waiting to be written to screen, can be delayed unless flushed.
 	fflush(stdout);
 	
-	//pthread_t t[pWaveData->numSamples / 32 / (SAMPLE_RATE / 100)]; // 宣告 pthread 變數
-	pthread_t t[sampleFile3.numSamples / NUM_CHANNELS / (SAMPLE_RATE / RESAMPLE_RATE)];
+	
 	
 	AudioPiece aPiece;
 	
 	wavedata_t sampleFile3;
 	sampleFile3.numSamples = pWaveData1->numSamples < pWaveData2->numSamples ? pWaveData1->numSamples : pWaveData2->numSamples;
 	sampleFile3.pData = malloc(sampleFile3.numSamples * SAMPLE_SIZE);
+	
+	//pthread_t t[pWaveData->numSamples / 32 / (SAMPLE_RATE / 100)]; // 宣告 pthread 變數
+	pthread_t t[sampleFile3.numSamples / NUM_CHANNELS / (SAMPLE_RATE / RESAMPLE_RATE)];
 	
 	bool thread_alive = false;
 	snd_pcm_sframes_t frames;
