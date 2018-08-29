@@ -59,7 +59,7 @@ int main(void)
 	snd_pcm_t *handle = Audio_openDevice();
 
 	char file1[] = "Audio/German_Concert_D_021_083.wav";
-	char file2[] = "Audio/German_Concert_D_083_083.wav";
+	char file2[] = "Audio/German_Concert_D_055_083.wav";
 	char file3[] = "Audio/German_Concert_D_033_083.wav";
 	char file4[] = "Audio/German_Concert_D_048_083.wav";
 	char file5[] = "Audio/German_Concert_D_071_083.wav";
