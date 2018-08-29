@@ -346,7 +346,7 @@ void Audio_playMultiFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData1, wavedata
 		
 		pthread_create( &(t[i]), NULL, Audio_playFile_Piece, &aPiece );
 		thread_alive = true;
-		usleep(90000);
+		usleep(100000);
 		//***/
 		
 		//frames = snd_pcm_writei(aPiece.handle, aPiece.pData, aPiece.bufNum);
