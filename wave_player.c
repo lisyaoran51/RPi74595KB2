@@ -73,9 +73,8 @@ int main(void)
 	
 	Audio_readWaveFileIntoMemory(file1, &sampleFile1);
 	Audio_readWaveFileIntoMemory(file2, &sampleFile2);
-	Audio_playFile(handle, &sampleFile1);
-	
-	//Audio_playFile_Cut(handle, &sampleFile1);
+	//Audio_playFile(handle, &sampleFile1);
+	Audio_playFile_Cut(handle, &sampleFile1);
 	//Audio_playMultiFile(handle, &sampleFile1, &sampleFile2);
 	//Audio_playMultiFile_Cut(handle, &sampleFile1, &sampleFile2);
 	
