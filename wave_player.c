@@ -334,12 +334,15 @@ void Audio_playMultiFile_Cut(snd_pcm_t *handle, wavedata_t *pWaveData1, wavedata
 		aPiece.pData = &(sampleFile3.pData[i * NUM_CHANNELS * (SAMPLE_RATE / RESAMPLE_RATE)]);
 		aPiece.bufNum = NUM_CHANNELS * (SAMPLE_RATE / RESAMPLE_RATE);
 		
+		Audio_playFile_Piece(&aPiece);
+		
+		/***
 		if(thread_alive)
 			pthread_join(t, NULL);
 		
 		pthread_create(&t, NULL, Audio_playFile_Piece, &aPiece );
 		thread_alive = true;
-		
+		***/
 		
 		//frames = snd_pcm_writei(aPiece.handle, aPiece.pData, aPiece.bufNum);
 		//pthread_create(&(t[i]), NULL, Audio_playFile_Piece, &aPiece ); // 建立子執行緒
