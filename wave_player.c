@@ -119,7 +119,7 @@ int main(void)
 
 	printf("Done!\n");
 	
-	*handle = Audio_openDevice();
+	handle = Audio_openDevice();
 	Audio_playFile(handle, &sampleFile1);
 	snd_pcm_drain(handle);
 	snd_pcm_hw_free(handle);
