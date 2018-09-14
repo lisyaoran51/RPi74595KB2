@@ -118,6 +118,17 @@ int main(void)
 	//free(sampleFile2.pData);
 
 	printf("Done!\n");
+	
+	snd_pcm_t *handle = Audio_openDevice();
+	Audio_playFile(handle, &sampleFile1);
+	snd_pcm_drain(handle);
+	snd_pcm_hw_free(handle);
+	snd_pcm_close(handle);
+	free(sampleFile1.pData);
+	
+	
+	
+	
 	return 0;
 }
 
