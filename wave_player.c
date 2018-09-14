@@ -186,6 +186,8 @@ void Audio_readWaveFileIntoMemory(char *fileName, wavedata_t *pWaveStruct)
 	int sizeInBytes = ftell(file) - DATA_OFFSET_INTO_WAVE;
 	fseek(file, DATA_OFFSET_INTO_WAVE, SEEK_SET);
 	pWaveStruct->numSamples = sizeInBytes / SAMPLE_SIZE;
+	
+	printf("The total size in byte is %d\n", sizeInBytes);
 
 	// Allocate Space
 	pWaveStruct->pData = malloc(sizeInBytes);
