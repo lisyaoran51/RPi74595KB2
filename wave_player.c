@@ -97,14 +97,14 @@ int main(void)
 	***/
 	
 	//printf("Play1\n");
-	//Audio_playFile(handle, &sampleFile1);
+	Audio_playFile(handle, &sampleFile1);
 	//printf("Play2\n");
 	//Audio_playFile(handle, &sampleFile2);
 	//printf("Play3\n");
 	//Audio_playFile(handle, &sampleFile3);
 	//Audio_playFile_Cut(handle, &sampleFile1);
 	//Audio_playMultiFile(handle, &sampleFile1, &sampleFile2);
-	Audio_playMultiFile_Cut(handle, &sampleFile1, &sampleFile2);
+	//Audio_playMultiFile_Cut(handle, &sampleFile1, &sampleFile2);
 	
 
 	// Cleanup, letting the music in buffer play out (drain), then close and free.
